@@ -1,0 +1,29 @@
+Este código foi criado pelo Claude Code em 13/05/2026 com o seguinte prompt e respostas:
+
+prompt:
+Claude, se comporte como um especialista em infraestrutura com foco em nuvem Azure. Qual é a melhor forma de permitir que uma vnet privada acesse a internet de forma segura sem habilitar conexão à internet diretamente na VM? Crie um diagrama de topologia para ilustrar
+
+Resposta:
+"A melhor abordagem para esse cenário no Azure é o Azure NAT Gateway em combinação com a topologia Hub-and-Spoke. Veja a estratégia completa antes do diagrama.
+Conceito central: as VMs ficam em subnets privadas sem nenhum IP público. O tráfego de saída para a internet é roteado através de um NAT Gateway (ou Azure Firewall, para inspeção mais profunda), que oferece IPs estáticos de saída, sem expor as VMs diretamente.
+Componentes principais:
+
+NAT Gateway — translação de endereço de saída (SNAT) sem IP público nas VMs. Ideal para saída simples e escalável.
+Azure Firewall (opcional) — adiciona inspeção de pacotes, FQDN filtering e logging. Recomendado para ambientes regulados.
+UDR (User Defined Routes) — força o tráfego de saída a passar pelo gateway/firewall, impedindo rotas diretas à internet.
+NSG (Network Security Group) — camada adicional de controle de tráfego inbound/outbound nas subnets.
+
+Fluxo de tráfego (saída para internet):
+
+VM (sem IP público) gera tráfego de saída
+UDR força rota 0.0.0.0/0 para o Azure Firewall
+Firewall inspeciona o pacote, aplica regras de FQDN/rede
+Tráfego aprovado sai pela subnet e chega ao NAT Gateway
+NAT Gateway faz SNAT com IP público estático antes de atingir a internet
+
+
+Quando usar cada abordagem:
+CenárioRecomendaçãoSaída simples e escalávelNAT Gateway apenasInspeção profunda, complianceNAT Gateway + Azure FirewallMulti-workload isoladoHub-and-Spoke com peeringConectar on-premisesAdicionar VPN/ExpressRoute no Hub
+Pontos críticos de segurança: nunca associe um Public IP diretamente à NIC da VM; use NSGs com regras de menor privilégio; habilite logs de diagnóstico no Firewall e no NAT Gateway para auditoria; e considere o Azure Policy para impor que nenhuma VM seja criada com IP público."
+
+Em seguida, solicitei à ele que gerasse o código Terraform que ilustrasse essa topologia e criaria estes recursos no rg-PrivateVNETtoInternet. Os arquivos neste repositório foram frutos deste prompt.
