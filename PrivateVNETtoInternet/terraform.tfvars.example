@@ -1,0 +1,29 @@
+# Rename this file to terraform.tfvars and fill in your values before applying.
+
+location = "brazilsouth"
+
+tags = {
+  environment = "production"
+  topology    = "hub-spoke-private-egress"
+  managed_by  = "terraform"
+  owner       = "infra-team"
+}
+
+# ── Hub ──────────────────────────────────────
+hub_vnet_address_space     = ["10.0.0.0/16"]
+hub_firewall_subnet_prefix = "10.0.1.0/26"
+hub_gateway_subnet_prefix  = "10.0.2.0/27"
+hub_nat_subnet_prefix      = "10.0.3.0/28"
+
+# ── Spoke 1 ──────────────────────────────────
+spoke1_vnet_address_space = ["10.1.0.0/16"]
+spoke1_subnet_prefix      = "10.1.1.0/24"
+
+# ── Spoke 2 ──────────────────────────────────
+spoke2_vnet_address_space = ["10.2.0.0/16"]
+spoke2_subnet_prefix      = "10.2.1.0/24"
+
+# ── VMs ──────────────────────────────────────
+vm_size           = "Standard_B2s"
+vm_admin_username = "azureadmin"
+vm_admin_password = "CHANGE_ME_Str0ngP@ssw0rd!"  # Use a secret manager in production
